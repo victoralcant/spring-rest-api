@@ -1,4 +1,4 @@
-package com.victor.springboot.rest;
+package com.victor.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
