@@ -7,6 +7,10 @@ import com.victor.springboot.api.controller.dto.UpdateTopicoInput;
 import com.victor.springboot.model.Topico;
 import com.victor.springboot.repository.CursoRepository;
 import com.victor.springboot.repository.TopicoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,7 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,12 +33,13 @@ public class TopicosController {
     }
 
     @GetMapping
-    public List<TopicoDto> list(String nomeCurso) {
+    public Page<TopicoDto> list(@RequestParam(required = false) String nomeCurso,
+                                @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable paginacao) {
         if (nomeCurso == null) {
-            var topicos = topicoRepository.findAll();
+            var topicos = topicoRepository.findAll(paginacao);
             return TopicoDto.converter(topicos);
         } else {
-            var topicos = topicoRepository.findByCursoNome(nomeCurso);
+            var topicos = topicoRepository.findByCursoNome(nomeCurso, paginacao);
             return TopicoDto.converter(topicos);
         }
     }
