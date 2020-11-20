@@ -5,8 +5,10 @@ import com.victor.springboot.api.controller.dto.TopicoDto;
 import com.victor.springboot.api.controller.dto.TopicoInput;
 import com.victor.springboot.api.controller.dto.UpdateTopicoInput;
 import com.victor.springboot.model.Topico;
+import com.victor.springboot.model.Usuario;
 import com.victor.springboot.repository.CursoRepository;
 import com.victor.springboot.repository.TopicoRepository;
+import com.victor.springboot.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,10 +28,12 @@ public class TopicosController {
 
     private final TopicoRepository topicoRepository;
     private final CursoRepository cursoRepository;
+    private final UserRepository userRepository;
 
-    public TopicosController(TopicoRepository topicoRepository, CursoRepository cursoRepository) {
+    public TopicosController(TopicoRepository topicoRepository, CursoRepository cursoRepository, UserRepository userRepository) {
         this.topicoRepository = topicoRepository;
         this.cursoRepository = cursoRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -48,10 +52,14 @@ public class TopicosController {
     @Transactional
     public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoInput topicoInput, UriComponentsBuilder uriBuilder) {
         Topico topico = topicoInput.converter(cursoRepository);
-        this.topicoRepository.save(topico);
-
-        URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
-        return ResponseEntity.created(uri).body(new TopicoDto(topico));
+        Optional<Usuario> usuarioOptional = userRepository.findByNome(topicoInput.getAutorNome());
+        if (usuarioOptional.isPresent()) {
+            topico.setAutor(usuarioOptional.get());
+            this.topicoRepository.save(topico);
+            URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+            return ResponseEntity.created(uri).body(new TopicoDto(topico));
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/{id}")
@@ -72,7 +80,7 @@ public class TopicosController {
         return ResponseEntity.ok(new TopicoDto(atualizado));
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> deletar(@PathVariable Long id) {
         topicoRepository.deleteById(id);

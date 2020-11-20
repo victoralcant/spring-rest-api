@@ -23,6 +23,9 @@ public class TopicoInput {
     @NotNull @NotEmpty
     private String nomeCurso;
 
+    @NotNull @NotEmpty
+    private String autorNome;
+
     public Topico converter(CursoRepository cursoRepository) {
         Curso curso = cursoRepository.findByNome(this.nomeCurso);
         return new Topico(this.titulo, this.mensagem, curso);
