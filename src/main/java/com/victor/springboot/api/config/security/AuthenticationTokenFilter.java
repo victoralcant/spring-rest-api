@@ -1,4 +1,4 @@
-package com.victor.springboot.api.config.security.filter;
+package com.victor.springboot.api.config.security;
 
 import com.victor.springboot.api.config.security.TokenService;
 import com.victor.springboot.model.Usuario;
