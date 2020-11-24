@@ -2,6 +2,7 @@ package com.victor.springboot.api.controller;
 
 import com.victor.springboot.api.config.security.TokenService;
 import com.victor.springboot.api.controller.dto.TokenDto;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
+@Profile("prod")
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
